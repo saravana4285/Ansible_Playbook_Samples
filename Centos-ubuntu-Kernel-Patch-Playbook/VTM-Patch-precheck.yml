@@ -1,0 +1,48 @@
+---
+- name: Playbook for Pre-check before OS Patching
+  hosts: all
+  tasks:
+  - name: Ping Test
+    ping: 
+
+  - name: Log File Creation
+    file:
+      path: /tmp/{{inventory_hostname}}_precheck.out
+      state: touch
+      owner: automation
+      group: automation
+      mode: '0644'
+      force: yes
+
+#  - name: system uptime
+#    shell: /usr/bin/uptime | grep -ohe 'up .*' |sed 's/,//g' |awk '{ print $2 }'
+#    register: uptime
+  
+  - name: Gathering system info
+    copy:
+        content: " hostname:{{ ansible_hostname }} \n IP:{{ ansible_all_ipv4_addresses[1]}} \n kernel:{{ ansible_kernel \n}}"
+        dest: /tmp/{{inventory_hostname}}_precheck.out  
+        backup: yes
+
+  - name: Server uptime
+    lineinfile:
+       path: /tmp/{{inventory_hostname}}_precheck.out  
+       line: "{{ ansible_uptime_seconds }}"
+       insertbefore: BOF
+#---
+#   
+#   - debug:
+#       msg:
+#        - "`ansible_architecture' is {{ ansible_architecture }}"
+#        - "`ansible_hostname' is {{ ansible_hostname }}"
+#        - "`ansible_Ipaddress' is {{ ansible_all_ipv4_addresses }}"
+#        - "`ansible_Ipaddress' is {{ ansible_all_ipv4_addresses[1] }}"
+# 
+#   - debug:
+#       msg: "Mount Point {{item.mount}} is at {{item.block_used/item.block_total*100}} percent "
+#     loop: "{{ansible_mounts}}"
+#     register: foo_result
+#   - local_action: 
+#       module: copy 
+#       content: "{{ foo_result.results }}" 
+#       dest: /tmp/{{inventory_hostname}}_precheck.out  

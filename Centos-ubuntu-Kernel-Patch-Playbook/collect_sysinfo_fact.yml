@@ -1,0 +1,31 @@
+---
+- name: facts
+  hosts: all
+  tasks:
+    - name: Create log file
+      file:
+        path: /tmp/{{inventory_hostname}}_sysinfo
+        state: touch
+
+
+    - name: Getting System info
+      blockinfile:
+        path: /tmp/{{inventory_hostname}}_sysinfo
+        block: |
+           Hostname : "{{ ansible_hostname| to_yaml }}" 
+           IP_Address : "{{ ansible_default_ipv4.network| to_yaml }}" 
+           DNS : "{{ ansible_dns| to_yaml }}" 
+           WWN : "{{ ansible_fibre_channel_wwn| to_yaml }}"
+           Kernel : "{{ ansible_kernel| to_yaml }}"
+           Total_MEM : "{{ ansible_memtotal_mb| to_yaml }}"
+           Free_MEM : "{{ ansible_memfree_mb| to_yaml }}"
+           TOTAL_CPU : "{{ ansible_processor| to_yaml }}"
+           CPU_Cores : "{{ ansible_processor_cores| to_yaml }}"
+           CPU_Count : "{{ ansible_processor_count| to_yaml }}"
+           Uptime_Sec : "{{ ansible_uptime_seconds| to_yaml }}"
+           Devices : "{{ ansible_devices| to_yaml }}"
+           OS : "{{ ansible_distribution| to_yaml }}"
+           OS_Version : "{{ ansible_distribution_version| to_yaml }}"
+           Fqdn : "{{ ansible_fqdn| to_yaml }}"
+#           "{{ ansible_env }}"
+#           "{{ ansible_lvm }}"

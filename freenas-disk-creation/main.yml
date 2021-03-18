@@ -1,0 +1,12 @@
+freenas_zfs_ensure: 'present'
+freenas_zfs_property_atime: 'off'
+freenas_zfs_property_primarycache: 'none'
+freenas_zfs_prperty_secondarycache: 'none'
+freenas_zfs_property_logbias: 'latency'
+freenas_zfs_propery_refquota: 'none'
+freenas_zfs_property_sync: 'standard'
+freenas_zfs_property_quota: 'off'
+freenas_zfs_property_compression_level: 'gzip-9'
+#freenas_zfs_property_comments: ''
+freenas_zfs_property_compression: 'gzip-9'
+freenas_zfs_dataset_hash: {}

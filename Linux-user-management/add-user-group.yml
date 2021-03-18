@@ -1,0 +1,27 @@
+---
+- name: Add Group and Users
+  become_method: sudo
+  hosts: freenas
+  vars_files:
+     - /etc/ansible/user_creation/vars.yml
+  tasks:
+     - name: create group view
+       group:
+          name: view
+          gid: 2020
+          state: present
+     - name: create group Edit 
+       group:
+          name: edit
+          gid: 2021
+          state: present
+     - name: Add users
+       user:
+          name: "{{ item.name }}" 
+          uid: "{{ item.uid }}"
+          groups: "{{ item.groups }}" 
+          shell: /bin/bash
+          state: present
+       with_items: "{{ user_details }}"    
+...
+          

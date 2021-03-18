@@ -1,0 +1,40 @@
+---
+- name: Patch server through Yum 
+  hosts : centos
+  tasks:
+    - name: Desired Kernel Version
+      set_fact:
+          release_version: "3.10.0.957.el7.x86_64"
+#          release_version: "3.13.0-24-generic"
+      run_once: true
+       
+    - name: check Kernel version
+      command: /bin/uname -r
+      register: kernel
+    - debug:
+        msg: " {{ kernel.stdout_lines }} "
+
+    - name: Yum clean
+      shell: /usr/bin/sudo /usr/bin/yum clean all
+      ignore_errors : True
+      register: clean_result
+      failed_when: clean_result.rc !=0
+      when: release_version != "3.10.0.957.el7.x86_64"
+
+    - name: patch
+      shell: /usr/bin/sudo /usr/bin/yum -y update
+      register: InstallationResult
+      ignore_errors: True
+      failed_when: InstallationResult.rc !=0
+      when: release_version != "3.10.0.957.el7.x86_64"
+      notify:
+         - Rebooting
+    
+  handlers:
+    - name: Rebooting
+      when: InstallationResult.rc != 0
+      reboot:
+        post_reboot_delay: 120
+        reboot_timeout: 1200
+        test_command: uptime
+      ignore_errors: True

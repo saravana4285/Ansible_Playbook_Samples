@@ -1,0 +1,13 @@
+---
+ - name: Collecting files
+   hosts: all
+   tasks:
+    - name: Find
+      find:
+        paths: /tmp
+        patterns: "?"
+      register: ftp1
+    - local_action:
+      module: copy 
+        content = "{{ ftp1.results }}" 
+        dest = "/tmp/ftp.log"

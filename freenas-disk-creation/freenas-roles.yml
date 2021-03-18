@@ -1,0 +1,11 @@
+---
+- hosts: freenas
+  become: yes
+  become_method: sudo 
+  tasks:
+    - name: Create a new Volume 
+      zfs:
+        name: volume1/myfs
+        state: present
+        extra_zfs_properties:
+          volsize: 10M 

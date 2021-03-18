@@ -1,0 +1,55 @@
+---
+- import_playbook: collect_sysinfo_fact.yml
+- name: Playbook for Precheck -> Patching
+  hosts: centos 
+#  gather_facts: no 
+  tasks:
+    
+    - name: Create Log file on remote servers
+      file:
+        path: /tmp/{{inventory_hostname}}_sysinfo
+        state: touch
+
+
+    - name: Desired Kernel Version
+      set_fact:
+          release_version: "3.10.0.957.27.2.el7.x86_64"
+#          release_version: "3.13.0-24-generic"
+      run_once: true
+       
+#    - name: check Kernel version
+#      command: /bin/uname -r
+#      register: kernel
+
+    - name: Yum clean
+      shell: /usr/bin/sudo /usr/bin/yum clean all
+      ignore_errors : True
+      register: clean_result
+      failed_when: clean_result.rc !=0
+      when: release_version != kernel_version
+
+    - name: patch the server
+      shell: /usr/bin/sudo /usr/bin/yum -y update
+#      when: release_version != "3.10.0.957.27.2.el7.x86_64"
+      register: InstallationResult
+      ignore_errors: True
+      failed_when: InstallationResult.rc !=0
+      when: release_version != kernel_version
+      notify:
+         - Rebooting
+    
+  handlers:
+    - name: Rebooting
+      when: InstallationResult.rc != 0
+      reboot:
+        post_reboot_delay: 120
+        reboot_timeout: 1200
+        test_command: uptime
+      ignore_errors: True
+
+     
+    - name: check Kernel version
+      command: /bin/uname -r
+      register: kernel
+    - debug:
+        msg: " After patch the kernel is :{{ kernel.stdout_lines }} "

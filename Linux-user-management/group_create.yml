@@ -1,0 +1,20 @@
+---
+- name: Create groups
+  hosts: freenas
+  become: yes
+  become_method: sudo
+  gather_facts: no
+  tasks:
+    - name: create group for Sysadmin
+      group:
+        name: sysadmin
+        state: present
+    - name: create group for L3
+      group:
+        name: l3group
+        state: present
+    - name: create group for L2
+      group:
+        name: l2group
+        state: present
+...
